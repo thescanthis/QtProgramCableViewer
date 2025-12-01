@@ -24,6 +24,7 @@ public:
 
     // POLYLINE 시작
     void addPolyline(const DL_PolylineData& data, const DL_Attributes& attr);
+    static void GroupPolyLineCheck(DxfModel& model);
 
     // VERTEX (Polyline의 점 추가)
     void addVertex(const DL_VertexData& data);

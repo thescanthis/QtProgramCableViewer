@@ -44,8 +44,13 @@ void TextEntity::addMText(const DL_MTextData &data,
     }
 
     DxfText T;
-    // 네 도면 기준으로는 dirx, diry 가 실제 화면 위치에 더 가까웠음
-    T.pos    = { data.dirx, data.diry };
+    if (qFuzzyCompare(data.ipx, 1.0) && qFuzzyCompare(data.ipy, 0.0)
+        && data.dirx > 100 && data.diry > 100) {
+        T.pos = { data.dirx, data.diry }; // fallback 좌표
+    } else {
+        T.pos = { data.ipx, data.ipy };   // 일반적인 좌표
+    }
+
     T.text   = QString::fromStdString(data.text);
     T.height = data.height;
     T.layer  = QString::fromStdString(attr.getLayer());

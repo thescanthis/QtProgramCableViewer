@@ -52,6 +52,28 @@ void LineEntity::addPolyline(const DL_PolylineData &data,
         static_cast<int>(m_model.polylines.size()) - 1;
 }
 
+void LineEntity::GroupPolyLineCheck(DxfModel &model)
+{
+    for (DxfPolyline& poly : model.polylines) {
+        if (poly.points.size() < 3)
+            continue;
+
+        QPainterPath path;
+        path.moveTo(QPointF(poly.points[0].x, poly.points[0].y));
+        for (int i = 1; i < poly.points.size(); ++i)
+            path.lineTo(QPointF(poly.points[i].x, poly.points[i].y));
+        path.closeSubpath();
+
+        for (const DxfText& text : model.texts) {
+            QPointF pt(text.pos.x, text.pos.y);
+            if (path.contains(pt)) {
+                poly.isGroupRegion = true;
+                break;
+            }
+        }
+    }
+}
+
 // -------------------------
 // POLYLINE의 각 Vertex 추가
 // -------------------------
@@ -62,10 +84,19 @@ void LineEntity::addVertex(const DL_VertexData &data)
         return;
     }
 
-    if (m_currentPolylineIndex < 0 ||
-        m_currentPolylineIndex >= static_cast<int>(m_model.polylines.size()))
-        return;
+    if (m_currentPolylineIndex >= 0) {
+        auto& poly = m_model.polylines[m_currentPolylineIndex];
+        poly.points.push_back({ data.x, data.y });
 
-    DxfPoint pt{ data.x, data.y };
-    m_model.polylines[m_currentPolylineIndex].points.push_back(pt);
+        // 👇 정점이 3개 이상일 때 암묵적 closed 판단
+        if (!poly.closed && poly.points.size() >= 3) {
+            const DxfPoint& first = poly.points.front();
+            const DxfPoint& last  = poly.points.back();
+
+            if (qFuzzyCompare(first.x, last.x) &&
+                qFuzzyCompare(first.y, last.y)) {
+                poly.closed = true;
+            }
+        }
+    }
 }

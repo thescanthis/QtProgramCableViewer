@@ -36,6 +36,8 @@ struct DxfPolyline
     std::vector<DxfPoint> points;
     bool     closed = false;
     QString  layer;
+
+    bool isGroupRegion = false; // 그룹을 의미하는 폴리라인인지 여부
 };
 
 enum class DxfEntityType
@@ -47,12 +49,19 @@ enum class DxfEntityType
     Text
 };
 
+enum class TextAlign {
+    Left,
+    Center,
+    Right
+};
+
 struct DxfText
 {
     DxfPoint pos;
     QString  text;
     double   height = 0.0;
     QString  layer;
+    TextAlign align = TextAlign::Left;  // ← 기본은 좌정렬
 };
 
 class DxfModel

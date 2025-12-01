@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "dxfview.h"
 #include "dxfloader.h"
+#include "textaligner.h"
+#include "lineentity.h"
 
 #include <QGraphicsScene>
 #include <QWheelEvent>
@@ -25,6 +27,10 @@ bool DxfView::loadDxfFile(const QString &filePath)
         m_scene->clear();
         return false;
     }
+
+    LineEntity::GroupPolyLineCheck(m_model);
+    TextAligner aligner(m_model);
+    aligner.alignAll();
 
     qDebug() << "[DxfView] lines ="     << m_model.lines.size()
              << "circles ="   << m_model.circles.size()

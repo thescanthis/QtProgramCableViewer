@@ -6,6 +6,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+# 기본 빌드 타입을 Debug로 설정하여 디버깅 시 브레이크포인트가 동작하도록 한다.
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -46,6 +51,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         ${DXFLIB_SOURCES}
         pch.h
+        DxfDrawModule/textaligner.h DxfDrawModule/textaligner.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CableDxfViewer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
