@@ -2,6 +2,15 @@
 #define DXFMODEL_H
 #pragma once
 
+enum class DxfEntityType
+{
+    Line,
+    Circle,
+    Arc,
+    Polyline,
+    Text
+};
+
 struct DxfPoint
 {
     double x = 0.0;
@@ -31,37 +40,39 @@ struct DxfArc
     QString  layer;
 };
 
+enum class TextAlign {Left,Center,Right};
+
+struct DxfText {
+    DxfPoint pos;
+    QString  text;
+    double   height = 0.0;
+    QString  layer;
+    TextAlign align = TextAlign::Left;
+    bool isMText = false; // MText 구분용 (필요시)
+};
+
 struct DxfPolyline
 {
     std::vector<DxfPoint> points;
     bool     closed = false;
     QString  layer;
-
     bool isGroupRegion = false; // 그룹을 의미하는 폴리라인인지 여부
 };
 
-enum class DxfEntityType
-{
-    Line,
-    Circle,
-    Arc,
-    Polyline,
-    Text
+// 1. 개별 단자 (예: A, B, C 사각형)
+struct TerminalItem {
+    DxfPolyline shape; // 단자 외형 (작은 사각형)
+    DxfText     label; // 단자 이름 (Text)
 };
 
-enum class TextAlign {
-    Left,
-    Center,
-    Right
-};
+// 2. 커넥터 그룹 (예: P1, P3...)
+struct ConnectorGroup {
+    DxfText     groupName;      // 그룹 이름 (P1, P3 등)
+    DxfPolyline groupShape;     // 그룹을 감싸는 큰 선 (Bracket)
+    QRectF      boundRect;      // 검색용 영역
 
-struct DxfText
-{
-    DxfPoint pos;
-    QString  text;
-    double   height = 0.0;
-    QString  layer;
-    TextAlign align = TextAlign::Left;  // ← 기본은 좌정렬
+    // 이 그룹에 속한 단자들
+    std::vector<TerminalItem> terminals;
 };
 
 class DxfModel
@@ -81,6 +92,7 @@ public:
     std::vector<DxfArc>      arcs;
     std::vector<DxfPolyline> polylines;
     std::vector<DxfText>     texts;
+    std::vector<ConnectorGroup> connectorGroups;
 
     // 전체 비우기
     void clear();

@@ -8,6 +8,7 @@ void DxfModel::clear()
     arcs.clear();
     polylines.clear();
     texts.clear();
+    connectorGroups.clear();
 }
 
 bool DxfModel::empty() const

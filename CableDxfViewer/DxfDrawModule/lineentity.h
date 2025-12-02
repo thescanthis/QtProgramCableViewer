@@ -21,18 +21,17 @@ public:
 
     // LINE 콜백 처리
     void addLine(const DL_LineData& data, const DL_Attributes& attr);
-
-    // POLYLINE 시작
     void addPolyline(const DL_PolylineData& data, const DL_Attributes& attr);
-    static void GroupPolyLineCheck(DxfModel& model);
-
-    // VERTEX (Polyline의 점 추가)
     void addVertex(const DL_VertexData& data);
+
+    static void buildConnectorGroups(DxfModel& model);
+
+private:
+    static std::vector<TerminalItem> extractTerminals(const DxfModel& model);
 
 private:
     DxfModel&        m_model;
     DxfBlockResolver& m_blockResolver;
-
     int m_currentPolylineIndex = -1;   // 현재 작성 중인 전역 polyline 인덱스
 };
 

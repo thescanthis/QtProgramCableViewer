@@ -28,7 +28,7 @@ bool DxfView::loadDxfFile(const QString &filePath)
         return false;
     }
 
-    LineEntity::GroupPolyLineCheck(m_model);
+    LineEntity::buildConnectorGroups(m_model);
     TextAligner aligner(m_model);
     aligner.alignAll();
 
